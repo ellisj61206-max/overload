@@ -1,0 +1,792 @@
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#17130F">
+<title>Overload</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#17130F; --panel:#201B16; --panel2:#2A231C; --line:#3A2E24;
+  --text:#F2EDE4; --muted:#A2968A; --faint:#6E6257;
+  --now:#FFB020; --past:#7FA6B8; --stall:#C4553C; --ok:#8FB07A;
+  --disp:"Barlow Condensed",Oswald,"Arial Narrow",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --pad:14px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:var(--body)}
+body{padding-bottom:86px;overscroll-behavior-y:contain}
+button{font-family:inherit;color:inherit;background:none;border:none;cursor:pointer}
+input,select{font-family:var(--mono);color:var(--text);background:var(--panel2);border:1px solid var(--line);border-radius:10px}
+.wrap{max-width:520px;margin:0 auto;padding:0 var(--pad)}
+
+header{position:sticky;top:0;z-index:20;background:linear-gradient(var(--bg) 76%,rgba(23,19,15,0));
+  padding:calc(env(safe-area-inset-top) + 12px) 0 10px}
+.hrow{display:flex;align-items:center;gap:10px}
+.brand{font-family:var(--disp);font-weight:700;letter-spacing:.14em;font-size:13px;color:var(--faint);text-transform:uppercase}
+.wk{margin-left:auto;display:flex;align-items:center;gap:2px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:2px}
+.wk button{width:40px;height:36px;font-family:var(--mono);font-size:17px;color:var(--muted);border-radius:9px}
+.wk button:active{background:var(--panel2)}
+.wk .lab{font-family:var(--disp);font-weight:700;font-size:15px;letter-spacing:.08em;padding:0 6px;min-width:74px;text-align:center;text-transform:uppercase}
+h1{font-family:var(--disp);font-weight:700;font-size:34px;line-height:.95;letter-spacing:-.01em;margin:14px 0 2px;text-transform:uppercase}
+.sub{color:var(--muted);font-size:13px;margin-bottom:16px}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;margin-bottom:10px;overflow:hidden}
+.daycard{display:flex;align-items:stretch;width:100%;text-align:left}
+.daycard .bar{width:5px;background:var(--line);flex:0 0 5px}
+.daycard.done .bar{background:var(--ok)}
+.daycard.live .bar{background:var(--now)}
+.daycard .mid{padding:13px 14px;flex:1;min-width:0}
+.chev{display:flex;align-items:center;padding-right:14px;color:var(--faint);font-size:20px}
+.eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;color:var(--faint);text-transform:uppercase}
+.dayname{font-family:var(--disp);font-weight:700;font-size:23px;letter-spacing:.01em;text-transform:uppercase;margin:1px 0 3px}
+.daymeta{font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+
+.exhead{display:flex;align-items:baseline;gap:8px;padding:12px 14px 8px}
+.exname{font-family:var(--disp);font-weight:600;font-size:19px;letter-spacing:.02em;text-transform:uppercase;line-height:1.05}
+.spark{margin-left:auto;flex:0 0 auto}
+.setrow{padding:10px 12px 12px;border-top:1px solid var(--line)}
+.srhead{display:flex;align-items:baseline;gap:8px;margin-bottom:7px}
+.setno{font-family:var(--mono);font-size:11px;color:var(--faint);flex:0 0 auto}
+.ghost{font-family:var(--mono);font-size:11px;color:var(--past);letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ghost.none{color:var(--faint)}
+.fields{display:flex;gap:8px}
+.field{display:flex;align-items:stretch;background:var(--panel2);border:1px solid var(--line);border-radius:12px;overflow:hidden;flex:1 1 0;min-width:0}
+.field.mini{flex:0 0 auto}
+.field button{flex:0 0 46px;height:50px;font-family:var(--mono);font-size:20px;color:var(--muted)}
+.field button:active{background:#39301f;color:var(--now)}
+.val{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:5px 0 4px}
+.mini .val{flex:0 0 58px}
+.val input{width:100%;min-width:0;height:24px;border:none;background:none;border-radius:0;text-align:center;font-size:17px;font-weight:600;padding:0}
+.val input:focus{outline:none;color:var(--now)}
+.tag{font-family:var(--mono);font-size:9px;color:var(--faint);letter-spacing:.12em;line-height:1;margin-top:2px}
+.rpe{display:flex;align-items:center;gap:5px;margin-top:8px}
+.rlab{font-family:var(--mono);font-size:9.5px;color:var(--faint);letter-spacing:.12em;flex:0 0 auto}
+.rpe button{flex:1 1 0;height:40px;border-radius:10px;background:var(--panel2);border:1px solid var(--line);font-family:var(--mono);font-size:14px;color:var(--muted)}
+.rpe button.on{background:var(--now);color:#17130F;border-color:var(--now);font-weight:600}
+
+.ctxrow{display:flex;align-items:center;gap:10px;padding:9px 14px;border-top:1px solid var(--line)}
+.ctxrow:first-child{border-top:none}
+.ctxlab{font-size:13px;color:var(--muted);flex:1;min-width:0}
+.ctxlab small{display:block;color:var(--faint);font-size:10.5px;font-family:var(--mono)}
+.ctxctl{flex:0 0 auto;display:flex;align-items:center;gap:6px}
+.ctxctl select{height:44px;padding:0 8px;font-size:13px}
+.seg{display:flex;gap:4px}
+.seg button{width:44px;height:44px;border-radius:10px;background:var(--panel2);border:1px solid var(--line);font-family:var(--mono);font-size:14px;color:var(--muted)}
+.seg button.on{background:var(--now);color:#17130F;border-color:var(--now);font-weight:600}
+
+/* ---- plan editor ---- */
+.planday{padding:11px 14px 6px;display:flex;align-items:baseline;gap:8px;border-bottom:1px solid var(--line)}
+.exrow{width:100%;display:flex;align-items:center;gap:10px;padding:12px 14px;border-top:1px solid var(--line);text-align:left}
+.exrow .nm{flex:1;min-width:0;font-size:14.5px;line-height:1.25}
+.exrow .nm em{display:block;font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--faint);margin-top:2px;letter-spacing:.06em}
+.exrow .cnt{font-family:var(--mono);font-size:11px;color:var(--muted);flex:0 0 auto}
+.acts{padding:4px 10px 12px;border-top:1px solid var(--line);background:#1B1712}
+.actgrid{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.act{height:42px;padding:0 14px;border-radius:11px;background:var(--panel2);border:1px solid var(--line);font-size:13px;color:var(--text)}
+.act.warn{color:var(--stall);border-color:#5b3025}
+.act:active{background:#39301f}
+.actlab{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;color:var(--faint);text-transform:uppercase;margin-top:10px;display:block}
+.addrow{padding:12px 14px;border-top:1px solid var(--line)}
+.addrow input{width:100%;height:48px;padding:0 12px;font-size:15px;margin-bottom:8px}
+
+/* ---- sheet ---- */
+.scrim{position:fixed;inset:0;background:rgba(10,8,6,.72);z-index:40}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:41;background:var(--panel);border-top:1px solid var(--line);
+  border-radius:20px 20px 0 0;padding:16px var(--pad) calc(env(safe-area-inset-bottom) + 18px);max-width:520px;margin:0 auto;max-height:88vh;overflow:auto}
+.sheet h3{font-family:var(--disp);font-weight:700;font-size:24px;text-transform:uppercase;margin:2px 0 3px}
+.sheet .note{margin-bottom:12px}
+.sheet label{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;color:var(--faint);text-transform:uppercase;margin:14px 0 6px}
+.sheet input[type=text]{width:100%;height:52px;padding:0 12px;font-size:16px;font-family:var(--body)}
+.row2{display:flex;gap:8px;margin-top:16px}
+.row2 .btn{margin:0}
+
+.chip{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:3px 7px;border-radius:6px;border:1px solid}
+.chip.stall{color:var(--stall);border-color:#5b3025;background:#2a1913}
+.chip.up{color:var(--ok);border-color:#3d4c33;background:#1d2318}
+.chip.arch{color:var(--faint);border-color:var(--line)}
+.btn{display:block;width:100%;height:52px;border-radius:14px;background:var(--now);color:#17130F;font-family:var(--disp);font-weight:700;font-size:17px;letter-spacing:.1em;text-transform:uppercase}
+.btn.ghostbtn{background:none;border:1px solid var(--line);color:var(--text)}
+.btn.warnbtn{background:none;border:1px solid #5b3025;color:var(--stall)}
+.btn:active{transform:translateY(1px)}
+.note{font-size:12.5px;color:var(--muted);line-height:1.5}
+.warnbox{border:1px solid #5b3025;background:#241611;border-radius:12px;padding:11px 12px;font-size:12.5px;color:#E2A08C;line-height:1.45;margin-bottom:12px}
+h2{font-family:var(--disp);font-weight:700;font-size:14px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin:20px 0 8px}
+table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12.5px}
+td,th{padding:8px 10px;border-top:1px solid var(--line);text-align:right}
+th{color:var(--faint);font-weight:500;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;border-top:none}
+td:first-child,th:first-child{text-align:left;font-family:var(--body);font-size:13px}
+.num{font-family:var(--mono)}
+.now{color:var(--now)}.past{color:var(--past)}.mut{color:var(--muted)}.stallc{color:var(--stall)}
+select.big{width:100%;height:48px;padding:0 12px;font-size:15px;margin-bottom:12px}
+textarea{width:100%;height:110px;background:var(--panel2);color:var(--muted);border:1px solid var(--line);border-radius:12px;font-family:var(--mono);font-size:10.5px;padding:10px}
+
+nav{position:fixed;bottom:0;left:0;right:0;z-index:30;background:rgba(26,21,17,.96);border-top:1px solid var(--line);
+  backdrop-filter:blur(12px);padding-bottom:env(safe-area-inset-bottom)}
+.navin{max-width:520px;margin:0 auto;display:flex}
+nav button{flex:1;padding:11px 0 13px;font-family:var(--disp);font-weight:600;font-size:12px;letter-spacing:.12em;color:var(--faint);text-transform:uppercase}
+nav button.on{color:var(--now)}
+nav button i{display:block;height:2px;width:20px;margin:0 auto 7px;background:transparent;border-radius:2px}
+nav button.on i{background:var(--now)}
+.back{font-family:var(--mono);font-size:12px;color:var(--muted);padding:6px 0;letter-spacing:.06em}
+@media (prefers-reduced-motion:no-preference){
+  .card{animation:rise .22s ease both}
+  @keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+}
+:focus-visible{outline:2px solid var(--now);outline-offset:2px}
+</style>
+
+<header><div class="wrap hrow">
+  <span class="brand">Overload</span>
+  <div class="wk">
+    <button id="wkdown" aria-label="Previous week">&minus;</button>
+    <span class="lab" id="wklab">Week 1</span>
+    <button id="wkup" aria-label="Next week">+</button>
+  </div>
+</div></header>
+
+<main class="wrap" id="app"></main>
+<div id="modal"></div>
+
+<nav><div class="navin">
+  <button data-tab="week" class="on"><i></i>Week</button>
+  <button data-tab="progress"><i></i>Progress</button>
+  <button data-tab="signals"><i></i>Signals</button>
+  <button data-tab="data"><i></i>Data</button>
+</div></nav>
+
+<script>
+/* ===================== DEFAULT PLAN ===================== */
+const DEFAULT_PLAN=[
+ {id:'d1',day:'Sunday',name:'Upper A',ex:[
+   {id:'inc-smith',n:'Incline Smith bench press',s:2,st:5},
+   {id:'pullup',n:'Pull-ups',s:2,st:5,bw:1},
+   {id:'cable-row',n:'Cable upper-back row',s:2,st:5},
+   {id:'dips',n:'Chest-focused dips',s:2,st:5,bw:1},
+   {id:'preacher',n:'Preacher curl',s:3,st:5},
+   {id:'tri-cuff',n:'Cuffed unilateral triceps pushdown',s:2,st:2.5},
+   {id:'rear-delt-1',n:'Reverse delt fly',s:1,st:2.5}]},
+ {id:'d2',day:'Monday',name:'Lower A',ex:[
+   {id:'lat-cuff',n:'Cuffed lateral raise',s:3,st:2.5},
+   {id:'ham-curl-1',n:'Seated hamstring curl',s:2,st:5},
+   {id:'adductor-1',n:'Hip adductor',s:2,st:5},
+   {id:'leg-ext-uni',n:'Unilateral leg extension',s:2,st:5},
+   {id:'leg-press-1',n:'Leg press',s:1,st:10}]},
+ {id:'d3',day:'Wednesday',name:'Upper B',ex:[
+   {id:'inc-db',n:'Incline DB press',s:2,st:5},
+   {id:'csr',n:'Chest-supported upper-back row',s:2,st:5},
+   {id:'lat-pullover',n:'Cable lat pullover',s:2,st:5},
+   {id:'pec-deck',n:'Pec deck fly',s:2,st:5},
+   {id:'cable-curl',n:'Cable curl',s:2,st:2.5},
+   {id:'tri-cuff-2',n:'Unilateral cuff cable pushdown',s:2,st:2.5},
+   {id:'rear-delt-2',n:'Reverse delt fly',s:1,st:2.5}]},
+ {id:'d4',day:'Thursday',name:'Lower B',ex:[
+   {id:'lat-db',n:'DB lateral raise',s:3,st:5},
+   {id:'ham-curl-2',n:'Seated hamstring curl',s:2,st:5},
+   {id:'leg-ext-iso',n:'Isolateral leg extension',s:2,st:5},
+   {id:'adductor-2',n:'Hip adductor',s:1,st:5},
+   {id:'leg-press-2',n:'Leg press',s:1,st:10}]}];
+
+const TOD=['','Morning','Midday','Evening','Night'];
+const KEY='overload:v1';
+let S={v:2,week:1,bw:175,sessions:{},plan:null,archive:[]};
+let view={tab:'week',day:null,exSel:null,planOpen:null,sheet:null};
+let saveTimer=null;
+
+/* ===================== STORAGE ===================== */
+let backend='none';
+const store={
+  async get(){
+    if(window.storage&&window.storage.get){
+      try{const r=await window.storage.get(KEY);if(r&&r.value){backend='claude';return r.value;}}catch(e){}
+    }
+    try{const v=localStorage.getItem(KEY);localStorage.setItem(KEY+':t','1');localStorage.removeItem(KEY+':t');
+      backend='local';return v;}catch(e){}
+    if(window.storage&&window.storage.set)backend='claude';
+    return null;
+  },
+  async set(v){
+    let ok=false;
+    if(window.storage&&window.storage.set){try{await window.storage.set(KEY,v);ok=true;}catch(e){}}
+    try{localStorage.setItem(KEY,v);ok=true;}catch(e){}
+    return ok;
+  }
+};
+const backendLabel=()=>backend==='claude'?'Claude artifact storage'
+  :backend==='local'?'this browser':'MEMORY ONLY — nothing will survive a reload';
+
+function migrate(){
+  if(!S.plan||!S.plan.length)S.plan=JSON.parse(JSON.stringify(DEFAULT_PLAN));
+  if(!Array.isArray(S.archive))S.archive=[];
+  S.plan.forEach(d=>{d.ex=(d.ex||[]).map(e=>({...e,s:Math.max(1,+e.s||1),st:+e.st||5}))});
+}
+async function load(){
+  try{const v=await store.get();if(v)S=Object.assign(S,JSON.parse(v));}catch(e){}
+  migrate();
+}
+function save(){
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(async()=>{
+    const ok=await store.set(JSON.stringify(S));
+    if(!ok)flash('Not saving. Copy your JSON from the Data tab before you close this.');
+  },350);
+}
+function flushSave(){
+  if(saveTimer){clearTimeout(saveTimer);saveTimer=null;}
+  const v=JSON.stringify(S);
+  try{localStorage.setItem(KEY,v);}catch(e){}
+  if(window.storage&&window.storage.set){try{window.storage.set(KEY,v);}catch(e){}}
+}
+/* iOS freezes backgrounded web apps, so commit immediately on the way out
+   instead of trusting the debounce to fire */
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')flushSave();});
+window.addEventListener('pagehide',flushSave);
+
+function flash(msg){
+  let el=document.getElementById('flash');
+  if(!el){el=document.createElement('div');el.id='flash';
+    el.style.cssText='position:fixed;bottom:96px;left:50%;transform:translateX(-50%);z-index:99;background:#C4553C;color:#fff;padding:10px 14px;border-radius:10px;font-size:13px;max-width:90%;text-align:center';
+    document.body.appendChild(el);}
+  el.textContent=msg;clearTimeout(el._t);el._t=setTimeout(()=>el.remove(),4200);
+}
+
+/* ===================== PLAN HELPERS ===================== */
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const slug=s=>String(s).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,26)||'ex';
+const allDefs=()=>S.plan.flatMap(d=>d.ex).concat(S.archive||[]);
+const exDef=id=>allDefs().find(e=>e.id===id);
+const dayDef=id=>S.plan.find(d=>d.id===id);
+const dayOfEx=id=>S.plan.find(d=>d.ex.some(e=>e.id===id));
+function newId(name){
+  const base=slug(name);let cand=base,n=2;
+  const taken=i=>allDefs().some(e=>e.id===i);
+  while(taken(cand))cand=base+'-'+(n++);
+  return cand;
+}
+const skey=(w,d)=>'w'+w+'-'+d;
+function sess(w,d,make){
+  const k=skey(w,d);
+  if(!S.sessions[k]&&make)S.sessions[k]={date:new Date().toISOString().slice(0,10),ctx:{},ex:{}};
+  return S.sessions[k];
+}
+/* sets for an exercise in a given week, searched across every day so moving an
+   exercise between days keeps its history intact */
+function setsFor(w,exId){
+  const pre='w'+w+'-';
+  for(const k in S.sessions){
+    if(k.indexOf(pre)!==0)continue;
+    const arr=(S.sessions[k].ex||{})[exId];
+    if(arr&&arr.length)return arr;
+  }
+  return null;
+}
+function e1rm(set,ex){
+  if(!set||!set.r)return 0;
+  const base=ex&&ex.bw?(+S.bw||0)+(+set.w||0):+((set||{}).w)||0;
+  if(!base)return 0;
+  return base*(1+set.r/30);
+}
+function bestWeek(w,exId){
+  const arr=setsFor(w,exId);if(!arr)return 0;
+  const ex=exDef(exId);
+  return Math.max(0,...arr.map(x=>e1rm(x,ex)));
+}
+function topSet(w,exId){
+  const arr=setsFor(w,exId);if(!arr)return null;
+  const ex=exDef(exId);let best=null,bv=0;
+  arr.forEach(x=>{const v=e1rm(x,ex);if(v>bv&&x.r){bv=v;best=x;}});
+  return best;
+}
+function weeksLogged(){
+  const ws=new Set();Object.keys(S.sessions).forEach(k=>ws.add(+k.slice(1).split('-')[0]));
+  return [...ws].filter(n=>!isNaN(n)).sort((a,b)=>a-b);
+}
+/* most recent earlier week in which this exercise was logged anywhere */
+function prevEntry(w,exId){
+  for(let i=w-1;i>=1;i--){const a=setsFor(i,exId);if(a)return {week:i,sets:a};}
+  return null;
+}
+function lastLoggedWeek(w,d){
+  for(let i=w-1;i>=1;i--){const s=S.sessions[skey(i,d)];if(s&&Object.keys(s.ex||{}).length)return i;}
+  return null;
+}
+function setsDone(s,day){
+  if(!s)return 0;let n=0;
+  day.ex.forEach(e=>((s.ex||{})[e.id]||[]).forEach(x=>{if(x&&x.r)n++;}));
+  return n;
+}
+const totalSets=day=>day.ex.reduce((a,e)=>a+e.s,0);
+const fmt=n=>Number.isInteger(+n)?+n:(+n).toFixed(1);
+function stallInfo(exId){
+  const ws=weeksLogged().filter(w=>bestWeek(w,exId)>0);
+  if(ws.length<3)return {stalled:false,ws};
+  const v=ws.map(w=>bestWeek(w,exId)),n=v.length;
+  return {stalled:v[n-1]<=v[n-2]*1.001&&v[n-2]<=v[n-3]*1.001,ws,v};
+}
+const hasData=exId=>weeksLogged().some(w=>bestWeek(w,exId)>0);
+
+/* ===================== CHARTS ===================== */
+function spark(exId){
+  const ys=weeksLogged().map(w=>bestWeek(w,exId)).filter(v=>v>0);
+  if(ys.length<2)return '';
+  const w=54,h=18,mn=Math.min(...ys),mx=Math.max(...ys),sp=mx-mn||1;
+  const pts=ys.map((v,i)=>[i/(ys.length-1)*(w-2)+1,h-1-((v-mn)/sp)*(h-3)]);
+  const up=ys[ys.length-1]>=ys[ys.length-2];
+  return `<svg class="spark" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" aria-hidden="true">
+    <polyline fill="none" stroke="var(--past)" stroke-width="1.4" stroke-linejoin="round"
+      points="${pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}"/>
+    <circle cx="${pts[pts.length-1][0].toFixed(1)}" cy="${pts[pts.length-1][1].toFixed(1)}" r="2.4"
+      fill="${up?'var(--ok)':'var(--stall)'}"/></svg>`;
+}
+function chart(xs,ys){
+  const W=300,H=150,L=32,R=6,T=10,B=20;
+  const mn=Math.min(...ys),mx=Math.max(...ys),pad=(mx-mn)*.25||Math.max(mx*.05,2);
+  const lo=Math.max(0,mn-pad),hi=mx+pad;
+  const px=i=>L+(xs.length===1?(W-L-R)/2:i/(xs.length-1)*(W-L-R));
+  const py=v=>T+(1-(v-lo)/(hi-lo))*(H-T-B);
+  let g='';
+  [hi,(hi+lo)/2,lo].forEach(v=>{g+=`<line x1="${L}" x2="${W-R}" y1="${py(v).toFixed(1)}" y2="${py(v).toFixed(1)}" stroke="var(--line)" stroke-width="1"/>
+    <text x="${L-6}" y="${(py(v)+3.5).toFixed(1)}" fill="var(--faint)" font-size="9" font-family="monospace" text-anchor="end">${v.toFixed(0)}</text>`;});
+  const pts=ys.map((v,i)=>[px(i),py(v)]);
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Estimated 1RM by week">${g}
+    <polyline fill="none" stroke="var(--now)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"
+      points="${pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}"/>
+    ${pts.map((p,i)=>`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3" fill="var(--bg)" stroke="var(--now)" stroke-width="2"/>
+      <text x="${p[0].toFixed(1)}" y="${H-6}" fill="var(--faint)" font-size="9" font-family="monospace" text-anchor="middle">${xs[i]}</text>`).join('')}</svg>`;
+}
+
+/* ===================== WEEK ===================== */
+function viewWeek(){
+  const w=S.week;
+  let h=`<h1>Week ${w}</h1><div class="sub">Four sessions. Beat last week's numbers, not the internet's.</div>`;
+  S.plan.forEach(d=>{
+    const s=S.sessions[skey(w,d.id)],done=setsDone(s,d),tot=totalSets(d);
+    const prev=lastLoggedWeek(w,d.id);
+    h+=`<button class="card daycard ${done>=tot&&tot?'done':(done>0?'live':'')}" data-open="${d.id}">
+      <span class="bar"></span><span class="mid">
+        <span class="eyebrow">${esc(d.day)}</span>
+        <span class="dayname">${esc(d.name)}</span>
+        <span class="daymeta">${done}/${tot} sets logged${prev?` &middot; <span class="past">last logged wk ${prev}</span>`:' &middot; <span class="mut">no history</span>'}</span>
+      </span><span class="chev">&rsaquo;</span></button>`;
+  });
+  const stalls=S.plan.flatMap(d=>d.ex).filter(e=>stallInfo(e.id).stalled);
+  if(stalls.length)h+=`<h2>Stalled</h2><div class="card" style="padding:12px 14px">
+    ${stalls.map(e=>`<div style="display:flex;align-items:center;gap:8px;margin:5px 0">
+      <span class="chip stall">2+ wk</span><span style="font-size:13.5px">${esc(e.n)}</span></div>`).join('')}
+    <div class="note" style="margin-top:8px">Check Signals before you change the program.</div></div>`;
+  h+=`<button class="btn ghostbtn" data-tab="plan" style="margin:14px 0 20px">Edit split</button>`;
+  return h;
+}
+
+/* ===================== SESSION ===================== */
+function viewSession(dayId){
+  const d=dayDef(dayId);
+  if(!d){view.day=null;return viewWeek();}
+  const w=S.week,s=sess(w,dayId,true),prevW=lastLoggedWeek(w,dayId),c=s.ctx||{};
+  let h=`<button class="back" data-tab="week">&lsaquo; Week ${w}</button>
+    <h1>${esc(d.name)}</h1><div class="sub">${esc(d.day)} &middot; ${setsDone(s,d)}/${totalSets(d)} sets${prevW?` &middot; last did this day in week ${prevW}`:''}</div>`;
+
+  h+=`<div class="card">
+    <div class="ctxrow"><span class="ctxlab">Pre-workout carbs<small>grams</small></span>
+      <span class="ctxctl">${stepper('carbs',c.carbs,5,'G')}</span></div>
+    <div class="ctxrow"><span class="ctxlab">Since last meal<small>hours</small></span>
+      <span class="ctxctl">${stepper('meal',c.meal,.5,'HRS')}</span></div>
+    <div class="ctxrow"><span class="ctxlab">Sleep last night<small>hours</small></span>
+      <span class="ctxctl">${stepper('sleep',c.sleep,.5,'HRS')}</span></div>
+    <div class="ctxrow"><span class="ctxlab">Time of day</span><span class="ctxctl">
+      <select data-ctx="tod">${TOD.map((t,i)=>`<option value="${i}" ${+c.tod===i?'selected':''}>${t||'—'}</option>`).join('')}</select></span></div>
+    <div class="ctxrow"><span class="ctxlab">Readiness<small>1 dead &rarr; 5 primed</small></span>
+      <span class="ctxctl"><span class="seg">${[1,2,3,4,5].map(v=>`<button data-ctxseg="readiness" data-v="${v}" class="${+c.readiness===v?'on':''}">${v}</button>`).join('')}</span></span></div>
+  </div>`;
+
+  d.ex.forEach(e=>{
+    const cur=(s.ex||{})[e.id]||[],pe=prevEntry(w,e.id),st=stallInfo(e.id);
+    h+=`<div class="card"><div class="exhead"><span class="exname">${esc(e.n)}</span>
+      ${st.stalled?'<span class="chip stall">stalled</span>':''}${spark(e.id)}</div>`;
+    for(let i=0;i<e.s;i++){
+      const set=cur[i]||{},p=pe?pe.sets[i]:null;
+      h+=`<div class="setrow">
+        <div class="srhead"><span class="setno">SET ${i+1}</span>
+          <span class="ghost ${p&&p.r?'':'none'}">${p&&p.r?`WK ${pe.week}: ${e.bw&&!p.w?'BW':fmt(p.w)+(e.bw?' added':'')} &times; ${p.r}${p.rpe?' @'+p.rpe:''}`:'no history for this set'}</span></div>
+        <div class="fields">
+          ${field(e.id,i,'w',set.w,e.st,e.bw?'ADDED LB':'LB')}
+          ${field(e.id,i,'r',set.r,1,'REPS')}
+        </div>
+        <div class="rpe"><span class="rlab">RPE</span>${[7,8,9,10].map(v=>`<button data-rpe="${e.id}" data-i="${i}" data-v="${v}" class="${+set.rpe===v?'on':''}">${v}</button>`).join('')}</div>
+      </div>`;
+    }
+    h+=`</div>`;
+  });
+  h+=`<button class="btn ghostbtn" data-fill="${dayId}" style="margin:6px 0 10px">Fill blanks from last time</button>
+      <button class="btn" data-tab="week">Done</button><div style="height:14px"></div>`;
+  return h;
+}
+function field(ex,i,k,val,step,tag){
+  return `<span class="field">
+    <button data-nudge="${ex}" data-i="${i}" data-k="${k}" data-d="${-step}" aria-label="decrease">&minus;</button>
+    <span class="val"><input inputmode="decimal" data-in="${ex}" data-i="${i}" data-k="${k}" value="${val==null?'':val}" placeholder="—"><span class="tag">${tag}</span></span>
+    <button data-nudge="${ex}" data-i="${i}" data-k="${k}" data-d="${step}" aria-label="increase">+</button></span>`;
+}
+function stepper(k,val,step,tag){
+  return `<span class="field mini">
+    <button data-cnudge="${k}" data-d="${-step}" aria-label="decrease">&minus;</button>
+    <span class="val"><input inputmode="decimal" data-ctx="${k}" value="${val==null?'':val}" placeholder="—"><span class="tag">${tag}</span></span>
+    <button data-cnudge="${k}" data-d="${step}" aria-label="increase">+</button></span>`;
+}
+
+/* ===================== PLAN EDITOR ===================== */
+function viewPlan(){
+  let h=`<button class="back" data-tab="week">&lsaquo; Week ${S.week}</button>
+    <h1>Split</h1><div class="sub">Tap an exercise to move, swap, rename, resize or remove it.</div>`;
+  S.plan.forEach(d=>{
+    h+=`<div class="card"><div class="planday"><span class="dayname" style="font-size:20px">${esc(d.name)}</span>
+      <span class="eyebrow">${esc(d.day)} &middot; ${totalSets(d)} sets</span></div>`;
+    d.ex.forEach((e,i)=>{
+      const open=view.planOpen===e.id;
+      h+=`<button class="exrow" data-planopen="${e.id}">
+        <span class="nm">${esc(e.n)}${hasData(e.id)?`<em>logged in ${weeksLogged().filter(w=>bestWeek(w,e.id)>0).length} week(s)</em>`:'<em>no history yet</em>'}</span>
+        <span class="cnt">${e.s} &times;${e.bw?' BW':''} ${fmt(e.st)}lb steps</span>
+        <span class="chev" style="padding:0">${open?'&#9662;':'&rsaquo;'}</span></button>`;
+      if(open)h+=`<div class="acts">
+        <span class="actlab">Order</span><div class="actgrid">
+          <button class="act" data-mv="${e.id}" data-dir="-1" ${i===0?'disabled style="opacity:.35"':''}>&uarr; Up</button>
+          <button class="act" data-mv="${e.id}" data-dir="1" ${i===d.ex.length-1?'disabled style="opacity:.35"':''}>&darr; Down</button>
+        </div>
+        <span class="actlab">Move to day (keeps history)</span><div class="actgrid">
+          ${S.plan.filter(x=>x.id!==d.id).map(x=>`<button class="act" data-moveday="${e.id}" data-to="${x.id}">${esc(x.name)}</button>`).join('')}
+        </div>
+        <span class="actlab">Change</span><div class="actgrid">
+          <button class="act" data-sheet="edit" data-day="${d.id}" data-ex="${e.id}">Edit</button>
+          <button class="act" data-sheet="swap" data-day="${d.id}" data-ex="${e.id}">Swap out</button>
+          <button class="act warn" data-rm="${e.id}">Remove</button>
+        </div></div>`;
+    });
+    h+=`<div class="addrow"><button class="btn ghostbtn" data-sheet="add" data-day="${d.id}">+ Add exercise to ${esc(d.name)}</button></div></div>`;
+  });
+  const arch=(S.archive||[]).filter(e=>hasData(e.id));
+  if(arch.length)h+=`<h2>Archived</h2><div class="card" style="padding:12px 14px">
+    <div class="note" style="margin-bottom:8px">Off the plan but their history is kept. Charts for these still work in Progress.</div>
+    ${arch.map(e=>`<div style="display:flex;align-items:center;gap:8px;margin:7px 0">
+      <span class="chip arch">archived</span><span style="font-size:13.5px;flex:1">${esc(e.n)}</span>
+      <button class="act" style="height:34px;padding:0 10px" data-unarch="${e.id}">Restore</button></div>`).join('')}</div>`;
+  h+=`<div style="height:20px"></div>`;
+  return h;
+}
+function viewSheet(){
+  if(!view.sheet)return '';
+  const sh=view.sheet,d=sh.draft;
+  const title=sh.mode==='add'?'Add exercise':sh.mode==='swap'?'Swap out':'Edit exercise';
+  const note=sh.mode==='swap'
+    ? `Replaces <b>${esc(sh.oldName)}</b> in ${esc(dayDef(sh.day).name)}. The new movement starts its own history; the old one is archived with its logs intact.`
+    : sh.mode==='edit'
+    ? 'Renaming keeps every logged set attached to this exercise. Use Swap out instead if the movement itself is changing.'
+    : `Added to the bottom of ${esc(dayDef(sh.day).name)}. You can reorder after.`;
+  return `<div class="scrim" data-closesheet="1"></div><div class="sheet">
+    <h3>${title}</h3><div class="note">${note}</div>
+    <label>Exercise name</label>
+    <input type="text" id="sheetname" value="${esc(d.n)}" placeholder="e.g. Dumbbell curl" autocomplete="off">
+    <label>Working sets</label>
+    <div class="seg">${[1,2,3,4,5,6].map(v=>`<button data-draft="s" data-v="${v}" class="${+d.s===v?'on':''}">${v}</button>`).join('')}</div>
+    <label>Weight step for the +/- buttons</label>
+    <div class="seg">${[2.5,5,10,25].map(v=>`<button data-draft="st" data-v="${v}" class="${+d.st===v?'on':''}" style="width:auto;padding:0 12px">${fmt(v)}</button>`).join('')}</div>
+    <label>Bodyweight movement</label>
+    <div class="seg">
+      <button data-draft="bw" data-v="0" class="${d.bw?'':'on'}" style="width:auto;padding:0 14px">Loaded</button>
+      <button data-draft="bw" data-v="1" class="${d.bw?'on':''}" style="width:auto;padding:0 14px">Bodyweight</button></div>
+    <div class="note" style="margin-top:6px">${d.bw?'Weight entered counts as <i>added</i> load, and your bodyweight is folded into the 1RM estimate.':'Weight entered is the load on the bar or stack.'}</div>
+    <div class="row2"><button class="btn ghostbtn" data-closesheet="1">Cancel</button>
+      <button class="btn" id="sheetsave">${sh.mode==='add'?'Add':'Save'}</button></div>
+  </div>`;
+}
+
+/* ===================== PROGRESS ===================== */
+function viewProgress(){
+  const arch=(S.archive||[]).filter(e=>hasData(e.id));
+  const first=(S.plan[0]&&S.plan[0].ex[0])||arch[0];
+  if(!first)return `<h1>Progress</h1><div class="sub">No exercises in the split.</div>`;
+  if(!view.exSel||!exDef(view.exSel))view.exSel=first.id;
+  const e=exDef(view.exSel),d=dayOfEx(view.exSel);
+  const ws=weeksLogged().filter(w=>bestWeek(w,view.exSel)>0),st=stallInfo(view.exSel);
+  let h=`<h1>Progress</h1><div class="sub">Estimated 1RM by week (Epley)${e.bw?`, bodyweight ${S.bw} lb included`:''}.</div>
+   <select class="big" id="exsel">${S.plan.map(dd=>`<optgroup label="${esc(dd.name)} — ${esc(dd.day)}">
+     ${dd.ex.map(x=>`<option value="${x.id}" ${x.id===view.exSel?'selected':''}>${esc(x.n)}</option>`).join('')}</optgroup>`).join('')}
+     ${arch.length?`<optgroup label="Archived">${arch.map(x=>`<option value="${x.id}" ${x.id===view.exSel?'selected':''}>${esc(x.n)}</option>`).join('')}</optgroup>`:''}</select>`;
+  if(ws.length<2)return h+`<div class="card" style="padding:16px"><div class="note">Log this exercise in at least two weeks and the chart appears here. Nothing to plot from ${ws.length} week${ws.length===1?'':'s'}.</div></div>`;
+  h+=`<div class="card" style="padding:14px 12px 8px">${chart(ws,ws.map(w=>bestWeek(w,view.exSel)))}
+    <div style="display:flex;gap:8px;align-items:center;padding:6px 2px 2px">
+      ${st.stalled?'<span class="chip stall">no progress 2+ weeks</span>':'<span class="chip up">moving</span>'}
+      <span class="note" style="margin-left:auto">${d?esc(d.name)+' &middot; '+esc(d.day):'archived'}</span></div></div>
+    <h2>Top set by week</h2><div class="card"><table><tr><th>Week</th><th>Top set</th><th>e1RM</th><th>&Delta;</th></tr>`;
+  ws.forEach((w,i)=>{
+    const t=topSet(w,view.exSel),v=bestWeek(w,view.exSel),pv=i?bestWeek(ws[i-1],view.exSel):0;
+    const dl=pv?((v-pv)/pv*100):null;
+    h+=`<tr><td>${w}</td><td class="num">${e.bw&&!t.w?'BW':fmt(t.w)}&times;${t.r}${t.rpe?' @'+t.rpe:''}</td>
+      <td class="num">${v.toFixed(0)}</td>
+      <td class="num ${dl==null?'mut':(dl>0.1?'now':'stallc')}">${dl==null?'—':(dl>0?'+':'')+dl.toFixed(1)+'%'}</td></tr>`;
+  });
+  return h+`</table></div>`;
+}
+
+/* ===================== SIGNALS ===================== */
+function compareSessions(){
+  const out=[];
+  S.plan.forEach(d=>{
+    weeksLogged().forEach(w=>{
+      const s=S.sessions[skey(w,d.id)];if(!s||!Object.keys(s.ex||{}).length)return;
+      const pw=lastLoggedWeek(w,d.id);if(!pw)return;
+      let a=0,b=0,n=0;
+      d.ex.forEach(e=>{const cv=bestWeek(w,e.id),pv=bestWeek(pw,e.id);
+        if(cv>0&&pv>0){a+=cv;b+=pv;n++;}});
+      if(!n||!b)return;
+      out.push({day:d,w,ctx:s.ctx||{},up:a>b*1.005,delta:(a-b)/b*100});
+    });
+  });
+  return out;
+}
+function viewSignals(){
+  const rows=compareSessions().filter(r=>Object.keys(r.ctx).length);
+  const n=rows.length,need=8;
+  let h=`<h1>Signals</h1><div class="sub">What was different on the weeks you moved weight versus the weeks you didn't.</div>`;
+  if(n<need)h+=`<div class="warnbox"><b>${n} of ${need} comparable sessions.</b> Below eight, any pattern here is noise. The numbers are shown so you can see them filling in, not so you can act on them.</div>`;
+  if(!n)return h+`<div class="card" style="padding:16px"><div class="note">Log a session with context in two different weeks and comparisons start here.</div></div>`;
+  const up=rows.filter(r=>r.up),flat=rows.filter(r=>!r.up);
+  const mean=(a,k)=>{const v=a.map(r=>r.ctx[k]).filter(x=>x!=null&&x!==''&&!isNaN(+x)).map(Number);
+    return v.length?v.reduce((s,x)=>s+x,0)/v.length:null;};
+  const vars=[['carbs','Pre-workout carbs','g'],['meal','Hours since last meal','h'],['sleep','Sleep','h'],['readiness','Readiness','/5']];
+  h+=`<h2>Moved (${up.length}) vs flat (${flat.length})</h2><div class="card"><table>
+    <tr><th>Variable</th><th>Moved</th><th>Flat</th><th>Gap</th></tr>`;
+  const gaps=[];
+  vars.forEach(([k,lab,u])=>{
+    const a=mean(up,k),b=mean(flat,k),g=(a!=null&&b!=null)?a-b:null;
+    if(g!=null&&b)gaps.push([lab,Math.abs(g/b),g,u]);
+    h+=`<tr><td>${lab}</td><td class="num ${n<need?'mut':'now'}">${a==null?'—':a.toFixed(1)}</td>
+      <td class="num ${n<need?'mut':'past'}">${b==null?'—':b.toFixed(1)}</td>
+      <td class="num ${n<need?'mut':''}">${g==null?'—':(g>0?'+':'')+g.toFixed(1)+u}</td></tr>`;
+  });
+  const todc=k=>{const c=[0,0,0,0,0];k.forEach(r=>{const t=+r.ctx.tod;if(t)c[t]++;});
+    return c.map((x,i)=>x?TOD[i]+' '+x:'').filter(Boolean).join(', ')||'—';};
+  h+=`<tr><td>Time of day</td><td colspan="3" class="num mut" style="font-size:11px">moved: ${todc(up)}<br>flat: ${todc(flat)}</td></tr></table></div>`;
+  if(n>=need&&gaps.length){
+    gaps.sort((a,b)=>b[1]-a[1]);
+    h+=`<h2>Biggest difference</h2><div class="card" style="padding:14px">
+      <div style="font-family:var(--disp);font-weight:700;font-size:22px;text-transform:uppercase">${gaps[0][0]}</div>
+      <div class="note" style="margin-top:6px">On weeks you added weight it averaged ${gaps[0][2]>0?'higher':'lower'} by ${Math.abs(gaps[0][2]).toFixed(1)}${gaps[0][3]}.
+      That is an association across ${n} sessions, not a cause. Test it by holding everything else steady for three weeks and moving this one on purpose.</div></div>`;
+  }
+  h+=`<h2>Session log</h2><div class="card"><table><tr><th>Wk</th><th>Day</th><th>Carbs</th><th>Sleep</th><th>&Delta;</th></tr>`;
+  rows.slice().reverse().forEach(r=>{h+=`<tr><td>${r.w}</td><td style="font-size:12px">${esc(r.day.name)}</td>
+    <td class="num">${r.ctx.carbs==null?'—':r.ctx.carbs}</td><td class="num">${r.ctx.sleep==null?'—':r.ctx.sleep}</td>
+    <td class="num ${r.up?'now':'stallc'}">${(r.delta>0?'+':'')+r.delta.toFixed(1)}%</td></tr>`;});
+  return h+`</table></div>`;
+}
+
+/* ===================== DATA ===================== */
+function viewData(){
+  const sc=Object.keys(S.sessions).length;
+  return `<h1>Data</h1><div class="sub">${sc} session${sc===1?'':'s'} stored on this device, across ${weeksLogged().length} week(s).</div>
+  <div class="card"><div class="ctxrow"><span class="ctxlab">Bodyweight<small>used for pull-up and dip e1RM</small></span>
+    <span class="ctxctl">${stepper('bw',S.bw,5,'LB')}</span></div></div>
+  <button class="btn ghostbtn" data-tab="plan" style="margin-bottom:8px">Edit split</button>
+  <button class="btn ghostbtn" id="dl" style="margin-bottom:8px">Download JSON</button>
+  <button class="btn ghostbtn" id="cp" style="margin-bottom:8px">Copy JSON</button>
+  <textarea id="io" placeholder="Paste a JSON backup here, then tap Restore">${esc(JSON.stringify(S))}</textarea>
+  <button class="btn ghostbtn" id="imp" style="margin:8px 0">Restore from JSON</button>
+  <h2>Storage</h2><div class="card" style="padding:14px"><div class="note">
+    Saving to: <b class="${backend==='none'?'stallc':'now'}">${backendLabel()}</b>.<br>
+    iPhone: open this page in Safari, tap Share, then Add to Home Screen. Launch it from the icon every time,
+    because a home-screen app keeps its own storage jar separate from Safari's.
+    Back up the JSON before you clear site data or switch phones. There is no cloud copy.</div></div>
+  <h2>Danger</h2>
+  <button class="btn warnbtn" id="resetplan">Reset split to original</button>
+  <div class="note" style="margin:8px 0 24px">Restores the four original days. Your logged sets are never deleted by this.</div>`;
+}
+
+/* ===================== RENDER + EVENTS ===================== */
+function render(){
+  document.getElementById('wklab').textContent='Week '+S.week;
+  document.getElementById('app').innerHTML=
+    view.tab==='week'?(view.day?viewSession(view.day):viewWeek())
+    :view.tab==='plan'?viewPlan()
+    :view.tab==='progress'?viewProgress()
+    :view.tab==='signals'?viewSignals():viewData();
+  document.getElementById('modal').innerHTML=viewSheet();
+  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',
+    b.dataset.tab===view.tab||(view.tab==='plan'&&b.dataset.tab==='week')));
+  if(!view.sheet)window.scrollTo({top:0});
+}
+function setV(exId,i,k,val){
+  const s=sess(S.week,view.day,true);
+  if(!s.ex[exId])s.ex[exId]=[];
+  while(s.ex[exId].length<=i)s.ex[exId].push({});
+  s.ex[exId][i][k]=val;save();
+}
+function captureName(){
+  const el=document.getElementById('sheetname');
+  if(el&&view.sheet)view.sheet.draft.n=el.value;
+}
+function openSheet(mode,dayId,exId){
+  const e=exId?exDef(exId):null;
+  view.sheet={mode,day:dayId,ex:exId,oldName:e?e.n:'',
+    draft:mode==='edit'?{n:e.n,s:e.s,st:e.st,bw:e.bw?1:0}
+      :mode==='swap'?{n:'',s:e.s,st:e.st,bw:e.bw?1:0}
+      :{n:'',s:2,st:5,bw:0}};
+  render();
+  const el=document.getElementById('sheetname');if(el)el.focus();
+}
+function saveSheet(){
+  captureName();
+  const sh=view.sheet,d=sh.draft,name=(d.n||'').trim();
+  if(!name)return flash('Give the exercise a name.');
+  const day=dayDef(sh.day);
+  if(sh.mode==='edit'){
+    const e=day.ex.find(x=>x.id===sh.ex);
+    e.n=name;e.s=+d.s;e.st=+d.st;if(+d.bw)e.bw=1;else delete e.bw;
+  }else if(sh.mode==='add'){
+    day.ex.push({id:newId(name),n:name,s:+d.s,st:+d.st,...(+d.bw?{bw:1}:{})});
+  }else{ /* swap */
+    const i=day.ex.findIndex(x=>x.id===sh.ex),old=day.ex[i];
+    if(hasData(old.id))S.archive.push(old);
+    day.ex[i]={id:newId(name),n:name,s:+d.s,st:+d.st,...(+d.bw?{bw:1}:{})};
+    view.planOpen=day.ex[i].id;
+  }
+  view.sheet=null;save();render();
+}
+document.addEventListener('click',e=>{
+  const t=e.target.closest('button,[data-closesheet]');if(!t)return;
+  const D=t.dataset;
+
+  if(D.closesheet){view.sheet=null;return render();}
+  if(t.id==='sheetsave')return saveSheet();
+  if(D.draft){captureName();view.sheet.draft[D.draft]=+D.v;return render();}
+
+  if(D.tab){view.tab=D.tab;view.day=null;view.sheet=null;return render();}
+  if(D.open){view.day=D.open;view.tab='week';return render();}
+
+  if(D.nudge){
+    const {nudge:ex,i,k,d}=D,inp=document.querySelector(`input[data-in="${ex}"][data-i="${i}"][data-k="${k}"]`);
+    let v=parseFloat(inp.value);
+    if(isNaN(v)){
+      const pe=prevEntry(S.week,ex),p=pe?pe.sets[+i]:null;
+      v=p&&p[k]!=null?+p[k]:Math.max(0,parseFloat(d));
+    }else v+=parseFloat(d);
+    v=Math.max(0,Math.round(v*100)/100);
+    inp.value=fmt(v);setV(ex,+i,k,v);return;
+  }
+  if(D.rpe){
+    const s=sess(S.week,view.day,true),cur=((s.ex[D.rpe]||[])[+D.i]||{}).rpe,off=+cur===+D.v;
+    setV(D.rpe,+D.i,'rpe',off?null:+D.v);
+    t.parentElement.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===t&&!off));
+    return;
+  }
+  if(D.ctxseg){
+    const s=sess(S.week,view.day,true);s.ctx=s.ctx||{};
+    const cur=s.ctx[D.ctxseg],off=+cur===+D.v;
+    s.ctx[D.ctxseg]=off?null:+D.v;save();
+    t.parentElement.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===t&&!off));
+    return;
+  }
+  if(D.cnudge){
+    const k=D.cnudge,inp=document.querySelector(`input[data-ctx="${k}"]`);
+    let v=parseFloat(inp.value);
+    if(isNaN(v))v=k==='sleep'?7:k==='bw'?(+S.bw||175):Math.max(0,parseFloat(D.d));
+    else v+=parseFloat(D.d);
+    v=Math.max(0,Math.round(v*10)/10);inp.value=fmt(v);
+    if(k==='bw')S.bw=v;else{const s=sess(S.week,view.day,true);s.ctx=s.ctx||{};s.ctx[k]=v;}
+    save();return;
+  }
+  if(D.fill){
+    const day=dayDef(D.fill),s=sess(S.week,D.fill,true);let filled=0;
+    day.ex.forEach(x=>{
+      const pe=prevEntry(S.week,x.id);if(!pe)return;
+      s.ex[x.id]=s.ex[x.id]||[];
+      for(let i=0;i<x.s;i++){
+        const cur=s.ex[x.id][i]||{},was=pe.sets[i];
+        if(!was){s.ex[x.id][i]=cur;continue;}
+        const next={...cur};
+        if(next.w==null&&was.w!=null){next.w=was.w;filled++;}
+        if(next.r==null&&was.r!=null){next.r=was.r;filled++;}
+        s.ex[x.id][i]=next;
+      }});
+    if(!filled)flash('Nothing to fill. Either there is no history or every field is already set.');
+    save();return render();
+  }
+
+  /* ---- plan editing ---- */
+  if(D.planopen){view.planOpen=view.planOpen===D.planopen?null:D.planopen;return render();}
+  if(D.sheet)return openSheet(D.sheet,D.day,D.ex);
+  if(D.mv){
+    const day=dayOfEx(D.mv),i=day.ex.findIndex(x=>x.id===D.mv),j=i+ +D.dir;
+    if(j<0||j>=day.ex.length)return;
+    [day.ex[i],day.ex[j]]=[day.ex[j],day.ex[i]];save();return render();
+  }
+  if(D.moveday){
+    const from=dayOfEx(D.moveday),to=dayDef(D.to);
+    if(!from||!to)return;
+    const i=from.ex.findIndex(x=>x.id===D.moveday),ex=from.ex.splice(i,1)[0];
+    to.ex.push(ex);
+    /* if it was already logged this week, carry that log across so the new day
+       doesn't show it as undone and get logged twice */
+    const src=S.sessions[skey(S.week,from.id)];
+    if(src&&src.ex&&src.ex[ex.id]){
+      const dst=sess(S.week,to.id,true);
+      dst.ex[ex.id]=src.ex[ex.id];delete src.ex[ex.id];
+    }
+    save();render();return flash('Moved to '+to.name+'. History kept.');
+  }
+  if(D.rm){
+    const day=dayOfEx(D.rm),e=exDef(D.rm);
+    if(!confirm(`Remove ${e.n} from ${day.name}?\n\nLogged sets are kept and it will keep its history if you add it back.`))return;
+    day.ex.splice(day.ex.findIndex(x=>x.id===D.rm),1);
+    if(hasData(e.id))S.archive.push(e);
+    view.planOpen=null;save();return render();
+  }
+  if(D.unarch){
+    const e=S.archive.find(x=>x.id===D.unarch);
+    const day=S.plan[0];
+    S.archive=S.archive.filter(x=>x.id!==D.unarch);
+    day.ex.push(e);save();render();return flash('Restored into '+day.name+'. Move it wherever it belongs.');
+  }
+
+  /* ---- data tab ---- */
+  if(t.id==='dl'){
+    const b=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(b);
+    a.download='overload-week'+S.week+'.json';a.click();return;
+  }
+  if(t.id==='cp'){navigator.clipboard.writeText(JSON.stringify(S))
+    .then(()=>flash('JSON copied.'),()=>flash('Copy blocked. Select the text in the box instead.'));return;}
+  if(t.id==='imp'){
+    try{const o=JSON.parse(document.getElementById('io').value);
+      if(!o||typeof o!=='object'||!o.sessions)throw 0;
+      S=Object.assign({v:2,week:1,bw:175,sessions:{},plan:null,archive:[]},o);
+      migrate();save();render();flash('Restored.');}
+    catch(err){flash('That is not a valid backup. Nothing was changed.');}
+    return;
+  }
+  if(t.id==='resetplan'){
+    if(!confirm('Reset the split to the original four days?\n\nYour logged sets stay. Any custom exercises with history move to Archived.'))return;
+    const keep=S.plan.flatMap(d=>d.ex).filter(e=>hasData(e.id)&&!DEFAULT_PLAN.some(d=>d.ex.some(x=>x.id===e.id)));
+    S.plan=JSON.parse(JSON.stringify(DEFAULT_PLAN));
+    keep.forEach(e=>{if(!S.archive.some(x=>x.id===e.id))S.archive.push(e);});
+    save();render();return flash('Split reset.');
+  }
+  if(t.id==='wkup'){S.week++;save();return render();}
+  if(t.id==='wkdown'&&S.week>1){S.week--;save();return render();}
+});
+document.addEventListener('input',e=>{
+  const t=e.target,D=t.dataset;
+  if(D.in){const v=t.value===''?null:Math.max(0,parseFloat(t.value));setV(D.in,+D.i,D.k,isNaN(v)?null:v);}
+  else if(D.ctx){
+    const raw=t.value===''?null:parseFloat(t.value);
+    if(D.ctx==='bw')S.bw=raw||0;
+    else{const s=sess(S.week,view.day,true);s.ctx=s.ctx||{};s.ctx[D.ctx]=(raw==null||isNaN(raw))?null:raw;}
+    save();
+  }
+});
+document.addEventListener('change',e=>{if(e.target.id==='exsel'){view.exSel=e.target.value;render();}});
+(async()=>{await load();render();})();
+</script>
